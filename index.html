@@ -60,6 +60,7 @@ nav ul a:hover,nav ul a.on{color:#fff}nav ul a.on::after,nav ul a:hover::after{t
 .bars{display:flex;align-items:flex-end;gap:10px;height:230px;padding:10px 4px;border-bottom:2px solid #1d2c47}
 .bars div{flex:1;background:linear-gradient(#1796ff,#6cc3ff);transform:skewX(-8deg);border-radius:6px 6px 0 0;height:0;transition:height 1s cubic-bezier(.2,.9,.3,1.2);transition-delay:calc(var(--i)*.1s)}
 .on .bars div{height:var(--h)}.lbl{display:flex;gap:10px;font-size:10px;color:#9fb0cb;margin-top:6px}.lbl span{flex:1;text-align:center}
+.dots{display:none}.dots i{width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,.4);transition:.3s}.dots i.on{width:26px;background:#fff}
 .scr h4{margin:0 0 4px;font-size:15px}.scr small{color:#9fb0cb}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:20px;max-width:1100px;margin:0 auto}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:6px 22px 6px 22px;padding:28px 20px}.stat strong{display:block;font-size:clamp(36px,4vw,54px);color:var(--blue);font-weight:800}.stat span{color:var(--mut);font-size:14px}
@@ -133,7 +134,11 @@ footer{background:var(--navy);color:#6f84a8;text-align:center;padding:24px 5vw 3
 @keyframes fb{50%{transform:translateY(-4px)}}
 @media(max-width:1024px){section{padding:80px 5vw}.cbox,.cg{gap:40px}.vh,.rw{grid-template-columns:1fr 110px 1fr}}
 @media(max-width:900px){nav{flex-wrap:wrap;gap:8px}nav ul{order:3;width:100%;overflow-x:auto;gap:20px}nav ul a{white-space:nowrap;font-size:14px}
-.hero .txt{top:17%;transform:none}.hint{display:none}.show,.cbox,.cg{grid-template-columns:1fr}.step{min-height:46vh}.sticky{top:96px;height:470px;order:-1;z-index:3}.phone{transform:scale(.72);transform-origin:top;margin-top:24px}.btn.ghost{margin:10px 0 0}
+.hero .txt{top:17%;transform:none}.hint{display:none}.show,.cbox,.cg{grid-template-columns:1fr}.show{gap:0}.step{min-height:56svh;opacity:.45}
+.sticky{top:calc(var(--nh,92px) + env(safe-area-inset-top,0px));height:clamp(270px,40svh,340px);border-radius:0 0 28px 28px;order:-1;z-index:3;box-shadow:0 -40px 0 0 var(--bg),0 24px 40px -24px rgba(0,0,0,.6)}
+.sticky::before{width:140px;height:50px;top:30px}.sticky::after{width:110px;height:50px;bottom:24px}
+.phone{transform:scale(.82);transform-origin:top center;margin-top:22px;flex:none}
+.dots{display:flex;gap:6px;position:absolute;left:0;right:0;bottom:12px;justify-content:center;z-index:3}.btn.ghost{margin:10px 0 0}
 .vh,.rw{grid-template-columns:1fr}.vh i{display:none}.rw b{justify-content:flex-start;text-align:left;padding-bottom:0;border-top:1px solid var(--line)}.rw b+.y,.rw .x{border-top:0}}
 @media(max-width:600px){section{padding:64px 5vw}.btn{padding:12px 20px;font-size:14px}.hero .txt{left:6vw;right:6vw}.tag{font-size:11px;letter-spacing:.22em;left:6vw}.brand{font-size:19px}.brand img{width:34px;height:34px}
 .res{padding:22px}.res strong{font-size:20px}.stat{padding:20px 14px}.vh div{padding:16px;font-size:17px}.rw>*{padding:12px 16px}.wc{padding:22px}.marq{font-size:12px}
@@ -212,9 +217,12 @@ addEventListener("scroll",()=>{
   let k=0;secs.forEach((s,i)=>s.getBoundingClientRect().top<innerHeight*.4&&(k=i));
   $$("#links a").forEach((a,i)=>a.classList.toggle("on",i===k));
 },{passive:true});
+const nv=$("#nav"),setNH=()=>document.documentElement.style.setProperty("--nh",nv.offsetHeight+"px");
+if(window.ResizeObserver)new ResizeObserver(setNH).observe(nv);setNH();addEventListener("resize",setNH);
+$("#stk").insertAdjacentHTML("beforeend",'<div class="dots" id="dots"><i class="on"></i><i></i><i></i></div>');
 const PC=["#1796ff","#0f6fd1","#0a4a96"],IS=["Matching affiliates","Scaling markets","Quality improving"];
 const so=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const i=+e.target.dataset.i;$$(".step").forEach((s,j)=>s.classList.toggle("on",i===j));$$(".scr").forEach((s,j)=>s.classList.toggle("on",i===j));
-$("#stk").style.setProperty("--pc",PC[i]);$("#isl").textContent=IS[i];$("#ln").style.transition="stroke-dashoffset 1.4s";$("#ln").style.strokeDashoffset=i===2?0:300}),{rootMargin:"-45% 0px -45% 0px"});$$(".step").forEach(s=>so.observe(s));
+$("#stk").style.setProperty("--pc",PC[i]);$$("#dots i").forEach((d,j)=>d.classList.toggle("on",i===j));$("#isl").textContent=IS[i];$("#ln").style.transition="stroke-dashoffset 1.4s";$("#ln").style.strokeDashoffset=i===2?0:300}),{rootMargin:matchMedia("(max-width:900px)").matches?"-62% 0px -28% 0px":"-45% 0px -45% 0px"});$$(".step").forEach(s=>so.observe(s));
 const ST=[[5,"+","Continents we run campaigns on"],[12,"+","Launch markets on our map"],[3,"","Pricing models: CPA, CPI, CPL"],[6,"","Services in one partnership"]];
 $("#stats").innerHTML=ST.map((s,i)=>`<div class="stat rv" style="--d:${i*.1}s"><strong data-to="${s[0]}" data-s="${s[1]}">0${s[1]}</strong><span>${s[2]}</span></div>`).join("");
 const co=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;co.unobserve(e.target);const el=e.target,to=+el.dataset.to,t0=performance.now(),f=n=>{const p=RM?1:Math.min(1,(n-t0)/1500);el.textContent=Math.round(to*(1-Math.pow(1-p,3)))+el.dataset.s;p<1&&requestAnimationFrame(f)};requestAnimationFrame(f)}),{threshold:.6});
